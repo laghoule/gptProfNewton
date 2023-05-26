@@ -44,24 +44,7 @@ func NewClient() (*AI, error) {
 	}, nil
 }
 
-func (a *AI) Chat(req string) (openai.ChatCompletionResponse, error) {
-	ccRequest := openai.ChatCompletionRequest{
-		Model: model,
-		Messages: []openai.ChatCompletionMessage{
-			{
-				Role:    openai.ChatMessageRoleSystem,
-				Content: newtonPrompt,
-			},
-			{
-				Role:    openai.ChatMessageRoleUser,
-				Content: req,
-			},
-		},
-	}
-	return a.client.CreateChatCompletion(context.Background(), ccRequest)
-}
-
-func (a *AI) Chat2(req []openai.ChatCompletionMessage) (openai.ChatCompletionResponse, error) {
+func (a *AI) Chat(req []openai.ChatCompletionMessage) (openai.ChatCompletionResponse, error) {
 	a.Request.Messages = append(a.Request.Messages, req...)
 	return a.client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest(*a.Request))
 }

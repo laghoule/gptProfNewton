@@ -33,7 +33,7 @@ func main() {
 			break
 		}
 
-		res, err := client.Chat2(client.Request.Messages)
+		res, err := client.Chat(client.Request.Messages)
 		if err != nil {
 			pterm.Error.Println(err)
 			continue
