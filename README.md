@@ -40,18 +40,6 @@ ou
 docker pull laghoule/gptProfNewton:latest
 ```
 
-Vous pouvez ensuite exécuter le Professeur Newton avec :
-
-```bash
-docker run -it --rm ghcr.io/laghoule/gptProfNewton:latest
-```
-
-ou
-
-```bash
-docker run -it --rm laghoule/gptProfNewton:latest
-```
-
 ### Utilisation
 
 Pour utiliser gptProfNewton, vous devez d'abord définir votre clé API OpenAI comme variable d'environnement :
