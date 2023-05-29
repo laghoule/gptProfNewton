@@ -52,7 +52,7 @@ func run(client *ai.AI) error {
 	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui ?")
 	pterm.Italic.Printf("Pour quitter, tu peux écrire: \"quit\"\n\n")
 
-	spinner := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	spinner := spinner.New(spinner.CharSets[2], 100*time.Millisecond)
 	if err := spinner.Color(spinnerColor); err != nil {
 		exitOnError(err)
 	}
