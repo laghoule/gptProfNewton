@@ -77,6 +77,7 @@ func run(client *ai.AI) error {
 		if err != nil { // TODO: add a limit of tokens
 			spinner.Stop()
 			pterm.Error.Println(err)
+			pterm.Println()
 			continue
 		}
 
