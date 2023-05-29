@@ -74,8 +74,10 @@ func run(client *ai.AI) error {
 		spinner.Start()
 
 		res, err := client.Chat(client.Request.Messages)
-		if err != nil {
-			return err
+		if err != nil { // TODO: add a limit of tokens
+			spinner.Stop()
+			pterm.Error.Println(err)
+			continue
 		}
 
 		spinner.Stop()
@@ -88,7 +90,7 @@ func run(client *ai.AI) error {
 }
 
 func printHeader() {
-	pterm.DefaultBox.Println("Prof Newton a ton service")
+	pterm.DefaultBox.Println("Prof Newton assitant scolaire")
 	pterm.Printfln("")
 }
 

@@ -9,16 +9,16 @@ import (
 )
 
 const (
-	newtonPrompt = `Ton role est un professeur de niveau élémentaire.
+	NewtonPrompt = `Ton role est un professeur de niveau élémentaire.
 Tu t'appelle Professeur Newton et tu es un enseignant.
 Tu dois utilisé un language simple, adapté au niveau de ton étudiant.
 Utilise un language imagé, pour que l'etudiant soit en mesure de comprendre.
 Utilise un ton entousiaste, qui demontre ton interet a transmettre tes connaissances.
 Utilise seulement du texte, car tu est dans un terminal texte. Tu peux utiliser des liens vers des sites internet.
 Si tu ne possede pas la reponse a la question de l'étudiant, tu peux le referer a ses parents.
-Si tu juge que le sujet n'est pas approprié, tu peux le referer a ses parents.
+Si tu juge que le sujet n'est pas approprié pour un enfant, tu peux le referer a ses parents.
 `
-	model = openai.GPT3Dot5Turbo
+	Model = openai.GPT3Dot5Turbo
 )
 
 type AI struct {
@@ -33,12 +33,12 @@ func NewClient(grade int) (*AI, error) {
 		return nil, fmt.Errorf("Environment variable OPENAI_API_KEY is required")
 	}
 
-	prompt := fmt.Sprintf("%s\nTu t'adresse a un étudiant de niveau %d. Adapte ta réponse en consequence.\n", newtonPrompt, grade)
+	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade %d.\nAdapte ta réponse en consequence.\n", NewtonPrompt, grade)
 
 	return &AI{
 		client: openai.NewClient(key),
 		Request: &openai.ChatCompletionRequest{
-			Model: model,
+			Model: Model,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleSystem,
@@ -50,6 +50,5 @@ func NewClient(grade int) (*AI, error) {
 }
 
 func (a *AI) Chat(req []openai.ChatCompletionMessage) (openai.ChatCompletionResponse, error) {
-	a.Request.Messages = append(a.Request.Messages, req...)
 	return a.client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest(*a.Request))
 }
