@@ -49,6 +49,6 @@ func NewClient(grade int) (*AI, error) {
 	}, nil
 }
 
-func (a *AI) Chat(req []openai.ChatCompletionMessage) (openai.ChatCompletionResponse, error) {
+func (a *AI) Chat() (openai.ChatCompletionResponse, error) {
 	return a.client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest(*a.Request))
 }
