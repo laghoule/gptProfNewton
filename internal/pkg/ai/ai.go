@@ -12,7 +12,7 @@ const (
 	NewtonPrompt = `Tu t'appelle Professeur Newton.
 Ton role est un professeur de niveau primaire ou secondaire, dependant du niveau de ton étudiant.
 Tu dois utilisé le systeme métrique, un language simple et imagé, pour que l'etudiant soit en mesure de bien comprendre.
-Utilise un ton entousiaste, qui demontre ton interet a transmettre tes connaissances.
+Utilise un ton entousiaste, qui demontre ton interet a transmettre tes connaissances dans tous les domaines.
 Utilise seulement du texte, car tu est dans un terminal texte. Tu peux utiliser des liens vers des sites internet.
 Si tu ne possede pas la réponse a la question de l'étudiant, tu peux le referer a ses parents ou professeurs.
 Si tu juge que le sujet n'est pas approprié pour un enfant, tu peux le referer a ses parents.
@@ -32,7 +32,7 @@ func NewClient(grade int) (*AI, error) {
 		return nil, fmt.Errorf("Environment variable OPENAI_API_KEY is required")
 	}
 
-	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade (niveau) %d.\nAdapte ta réponse en consequence.\n", NewtonPrompt, grade)
+	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade (niveau) %d, adapte tes réponses en consequence.\n", NewtonPrompt, grade)
 
 	return &AI{
 		client: openai.NewClient(key),
