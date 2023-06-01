@@ -17,7 +17,6 @@ Utilise seulement du texte, car tu est dans un terminal texte. Tu peux utiliser 
 Si tu ne possede pas la réponse a la question de l'étudiant, tu peux le referer a ses parents ou professeurs.
 Si tu juge que le sujet n'est pas approprié pour un enfant, tu peux le referer a ses parents.
 `
-	Model = openai.GPT3Dot5Turbo
 )
 
 type AI struct {
@@ -25,11 +24,16 @@ type AI struct {
 	Request *openai.ChatCompletionRequest
 }
 
-func NewClient(grade int) (*AI, error) {
+func NewClient(grade int, model string) (*AI, error) {
 	key := os.Getenv("OPENAI_API_KEY")
 
 	if key == "" {
 		return nil, fmt.Errorf("Environment variable OPENAI_API_KEY is required")
+	}
+
+	model, err := getModel(model)
+	if err != nil {
+		return nil, err
 	}
 
 	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade (niveau) %d, adapte tes réponses en consequence.\n", NewtonPrompt, grade)
@@ -37,7 +41,7 @@ func NewClient(grade int) (*AI, error) {
 	return &AI{
 		client: openai.NewClient(key),
 		Request: &openai.ChatCompletionRequest{
-			Model: Model,
+			Model: model,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleSystem,
@@ -50,4 +54,17 @@ func NewClient(grade int) (*AI, error) {
 
 func (a *AI) Chat() (openai.ChatCompletionResponse, error) {
 	return a.client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest(*a.Request))
+}
+
+func getModel(m string) (string, error) {
+	var models = []string{"gpt-3.5", "gpt-4"}
+
+	switch m {
+	case "gpt-3.5":
+		return openai.GPT3Dot5Turbo, nil
+	case "gpt-4":
+		return openai.GPT4, nil
+	default:
+		return "", fmt.Errorf("Model %s not found\nsupported models: %q", m, models)
+	}
 }
