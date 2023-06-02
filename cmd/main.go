@@ -25,6 +25,7 @@ var (
 func main() {
 	grade := flag.Int("grade", 4, "Grade de l'éléve (1-12)")
 	model := flag.String("model", "gpt-3.5", "Modéle de l'API OpenAI")
+	creative := flag.Bool("creative", false, "Utiliser le modele creatif")
 	version := flag.Bool("version", false, "Afficher la version")
 	flag.Parse()
 
@@ -39,7 +40,7 @@ func main() {
 
 	printHeader()
 
-	client, err := ai.NewClient(*grade, *model)
+	client, err := ai.NewClient(*grade, *model, *creative)
 	if err != nil {
 		exitOnError(err)
 	}

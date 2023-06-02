@@ -24,7 +24,7 @@ type AI struct {
 	Request *openai.ChatCompletionRequest
 }
 
-func NewClient(grade int, model string) (*AI, error) {
+func NewClient(grade int, model string, creative bool) (*AI, error) {
 	key := os.Getenv("OPENAI_API_KEY")
 
 	if key == "" {
@@ -36,12 +36,18 @@ func NewClient(grade int, model string) (*AI, error) {
 		return nil, err
 	}
 
+	var temperature float32
+	if creative {
+		temperature = 0.7
+	}
+
 	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade (niveau) %d, adapte tes réponses en consequence.\n", NewtonPrompt, grade)
 
 	return &AI{
 		client: openai.NewClient(key),
 		Request: &openai.ChatCompletionRequest{
-			Model: model,
+			Model:       model,
+			Temperature: temperature,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleSystem,
