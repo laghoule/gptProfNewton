@@ -66,8 +66,7 @@ func run(ai *ai.AI, debug bool) error {
 	s := bufio.NewScanner(os.Stdin)
 
 	for s.Scan() {
-		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT)
-		defer stop()
+		ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT)
 
 		ai.Request.Messages = append(ai.Request.Messages, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleUser,
