@@ -2,9 +2,12 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/laghoule/gptProfNewton/internal/pkg/ai"
@@ -23,9 +26,10 @@ var (
 )
 
 func main() {
-	grade := flag.Int("grade", 4, "Grade de l'éléve (1-12)")
-	model := flag.String("model", "gpt-3.5", "Modéle de l'API OpenAI")
 	creative := flag.Bool("creative", false, "Utiliser le modele creatif")
+	debug := flag.Bool("debug", false, "Activer le mode debug")
+	grade := flag.Int("grade", 4, "Grade de l'éléve (1-12)")
+	model := flag.String("model", "gpt-3.5", "Modéle de l'API d'OpenAI")
 	version := flag.Bool("version", false, "Afficher la version")
 	flag.Parse()
 
@@ -40,19 +44,19 @@ func main() {
 
 	printHeader()
 
-	client, err := ai.NewClient(*grade, *model, *creative)
+	ai, err := ai.NewClient(*grade, *model, *creative)
 	if err != nil {
 		exitOnError(err)
 	}
 
-	if err := run(client); err != nil {
+	if err := run(ai, *debug); err != nil {
 		exitOnError(err)
 	}
 }
 
-func run(client *ai.AI) error {
+func run(ai *ai.AI, debug bool) error {
 	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui ?")
-	pterm.Italic.Printf("Pour quitter, tu peux écrire: \"quit\"\n\n")
+	pterm.Italic.Printf("Pour quitter [quit], pour reinitiliser [reset]\n\n")
 
 	spinner := spinner.New(spinner.CharSets[2], 100*time.Millisecond)
 	if err := spinner.Color(spinnerColor); err != nil {
@@ -62,31 +66,49 @@ func run(client *ai.AI) error {
 	s := bufio.NewScanner(os.Stdin)
 
 	for s.Scan() {
-		client.Request.Messages = append(client.Request.Messages, openai.ChatCompletionMessage{
+		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT)
+		defer stop()
+
+		ai.Request.Messages = append(ai.Request.Messages, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleUser,
 			Content: s.Text(),
 		})
 
-		if s.Text() == "quit" {
+		switch s.Text() {
+		case "quit":
 			pterm.FgGreen.Printf("\nAurevoir, et bonne étude!\n\n")
-			break
+			return nil
+		case "reset":
+			pterm.FgLightGreen.Printf("\nReinitialisation de la conversation\n\n")
+			ai.Reset()
+			continue
 		}
 
 		pterm.Printfln("")
 		spinner.Start()
 
-		res, err := client.Chat()
-		if err != nil { // TODO: add a limit of tokens
+		res, err := ai.Chat(ctx)
+		if err != nil { // TODO: handle token limits
 			spinner.Stop()
-			pterm.Error.Println(err)
-			pterm.Println()
+			if ctx.Err() == context.Canceled {
+				pterm.FgLightGreen.Printf("Message annulé\n\n")
+				ai.CancelLastMessage()
+				if debug {
+					printMsg(ai.Request.Messages)
+				}
+				continue
+			}
+			pterm.Error.Printf("%s\n\n", err)
 			continue
 		}
 
 		spinner.Stop()
 		pterm.FgGreen.Printf("%s\n\n", res.Choices[0].Message.Content)
+		if debug {
+			printMsg(ai.Request.Messages)
+		}
 
-		client.Request.Messages = append(client.Request.Messages, res.Choices[0].Message)
+		ai.Request.Messages = append(ai.Request.Messages, res.Choices[0].Message)
 	}
 
 	return nil
@@ -94,6 +116,14 @@ func run(client *ai.AI) error {
 
 func printHeader() {
 	pterm.DefaultBox.Println("Prof Newton assitant scolaire")
+	pterm.Printfln("")
+}
+
+func printMsg(msgs []openai.ChatCompletionMessage) {
+	for _, m := range msgs {
+		pterm.FgLightBlue.Printf("Role: %s\n", m.Role)
+		pterm.FgLightBlue.Printf("Content: %s\n", m.Content)
+	}
 	pterm.Printfln("")
 }
 

@@ -11,7 +11,7 @@ import (
 const (
 	NewtonPrompt = `Tu t'appelle Professeur Newton.
 Ton role est un professeur de niveau primaire ou secondaire, dependant du niveau de ton étudiant.
-Tu dois utilisé le systeme métrique, un language simple et imagé, pour que l'etudiant soit en mesure de bien comprendre.
+Utilise le systeme métrique, un language simple et imagé, afin que l'étudiant soit en mesure de bien comprendre.
 Utilise un ton entousiaste, qui demontre ton interet a transmettre tes connaissances dans tous les domaines.
 Utilise seulement du texte, car tu est dans un terminal texte. Tu peux utiliser des liens vers des sites internet.
 Si tu ne possede pas la réponse a la question de l'étudiant, tu peux le referer a ses parents ou son professeurs.
@@ -60,8 +60,16 @@ func NewClient(grade int, model string, creative bool) (*AI, error) {
 	}, nil
 }
 
-func (a *AI) Chat() (openai.ChatCompletionResponse, error) {
-	return a.client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest(*a.Request))
+func (a *AI) Chat(ctx context.Context) (openai.ChatCompletionResponse, error) {
+	return a.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest(*a.Request))
+}
+
+func (a *AI) Reset() {
+	a.Request.Messages = a.Request.Messages[:1]
+}
+
+func (a *AI) CancelLastMessage() {
+	a.Request.Messages = a.Request.Messages[:len(a.Request.Messages)-1]
 }
 
 func getModel(m string) (string, error) {
