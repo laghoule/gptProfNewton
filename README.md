@@ -2,8 +2,9 @@
 
 ## Description
 
-gptProfNewton est un projet qui utilise le modèle GPT pour simuler un professeur généraliste de niveau élémentaire, le Professeur Newton. Le Professeur Newton est conçu pour utiliser un langage simple et imagé, adapté au niveau de l'élève. Il est toujours enthousiaste et démontre un grand intérêt à transmettre ses connaissances. Le programme est écrit en Go et utilise l'API OpenAI pour générer des réponses.
-Caractéristiques
+gptProfNewton est un projet qui utilise le modèle GPT pour simuler un professeur généraliste de niveau primaire et secondaire, le Professeur Newton. Le Professeur Newton est conçu pour utiliser un langage simple et imagé, adapté au niveau de l'élève. Il est toujours enthousiaste et démontre un grand intérêt à transmettre ses connaissances. Le programme est écrit en Go et utilise l'API OpenAI pour générer des réponses.
+
+### Caractéristiques
 
 * Langage simple et imagé : Le Professeur Newton utilise un langage simple et imagé pour faciliter la compréhension des concepts par les élèves.
 
@@ -48,18 +49,30 @@ Pour Linux et macOS :
 
 ```bash
 export OPENAI_API_KEY=your-api-key
+./gptProfNewton
 ```
 
 Pour Windows :
 
 ```powershell
 $env:OPENAI_API_KEY="your-api-key"
+gptProfNewton
 ```
 
 Vous pouvez ensuite exécuter le binaire construit avec la commande suivante :
 
 ```bash
-./gptProfNewton
+./gptProfNewton -h
+  -creative
+        Utiliser le modele creatif
+  -debug
+        Activer le mode debug
+  -grade int
+        Grade de l'éléve (1-12) (default 4)
+  -model string
+        Modéle de l'API d'OpenAI (default "gpt-3.5")
+  -version
+        Afficher la version
 ```
 
 Ou, si vous utilisez Docker, vous pouvez passer la clé API comme variable d'environnement à Docker :
@@ -68,11 +81,12 @@ Ou, si vous utilisez Docker, vous pouvez passer la clé API comme variable d'env
 docker run -it --rm -e OPENAI_API_KEY=your-api-key ghcr.io/laghoule/gptProfNewton:latest
 ```
 
-Pour quitter le programme, tapez "quit".
+Pour quitter le programme, tapez `quit`, pour reinitialiser un conversation, tapez `reset`.
 
 ### Contribution
 
 Les contributions sont les bienvenues ! Pour contribuer, veuillez forker le dépôt et créer une pull request.
-Licence
+
+### Licence
 
 gptProfNewton est sous licence GPLv3. Voir le fichier LICENSE pour plus de détails.
