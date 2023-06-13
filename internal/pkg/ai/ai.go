@@ -24,26 +24,35 @@ Directive: Tu dois assiter ton etudiant, et non faire ces travaux a sa place.
 type AI struct {
 	client  *openai.Client
 	Request *openai.ChatCompletionRequest
+	Config
 }
 
-func NewClient(grade int, model string, creative bool) (*AI, error) {
+type Config struct {
+	Grade    int
+	Model    string
+	Stream   bool
+	Creative bool
+	Debug    bool
+}
+
+func NewClient(conf Config) (*AI, error) {
 	key := os.Getenv("OPENAI_API_KEY")
 
 	if key == "" {
 		return nil, fmt.Errorf("Environment variable OPENAI_API_KEY is required")
 	}
 
-	model, err := getModel(model)
+	model, err := getModel(conf.Model)
 	if err != nil {
 		return nil, err
 	}
 
 	var temperature float32
-	if creative {
+	if conf.Creative {
 		temperature = 0.7
 	}
 
-	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade (niveau) %d, adapte tes réponses en consequence.\n", NewtonPrompt, grade)
+	prompt := fmt.Sprintf("%sTu t'adresses a un étudiant de grade (niveau) %d, adapte tes réponses en consequence.", NewtonPrompt, conf.Grade)
 
 	return &AI{
 		client: openai.NewClient(key),
@@ -56,12 +65,18 @@ func NewClient(grade int, model string, creative bool) (*AI, error) {
 					Content: prompt,
 				},
 			},
+			Stream: conf.Stream,
 		},
+		Config: conf,
 	}, nil
 }
 
 func (a *AI) Chat(ctx context.Context) (openai.ChatCompletionResponse, error) {
 	return a.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest(*a.Request))
+}
+
+func (a *AI) ChatStream(ctx context.Context) (*openai.ChatCompletionStream, error) {
+	return a.client.CreateChatCompletionStream(ctx, openai.ChatCompletionRequest(*a.Request))
 }
 
 func (a *AI) Reset() {

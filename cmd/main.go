@@ -8,17 +8,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/laghoule/gptProfNewton/internal/pkg/ai"
-	"github.com/sashabaranov/go-openai"
-
-	"github.com/briandowns/spinner"
 	"github.com/pterm/pterm"
-)
-
-const (
-	spinnerColor string = "fgGreen"
+	"github.com/sashabaranov/go-openai"
 )
 
 var (
@@ -30,6 +23,7 @@ func main() {
 	debug := flag.Bool("debug", false, "Activer le mode debug")
 	grade := flag.Int("grade", 4, "Grade de l'éléve (1-12)")
 	model := flag.String("model", "gpt-3.5", "Modéle de l'API d'OpenAI")
+	stream := flag.Bool("stream", true, "Activer le mode streaming")
 	version := flag.Bool("version", false, "Afficher la version")
 	flag.Parse()
 
@@ -42,26 +36,29 @@ func main() {
 		exitOnError(fmt.Errorf("Vous devez choisir un grade entre 1 et 12)"))
 	}
 
+	conf := ai.Config{
+		Debug:    *debug,
+		Creative: *creative,
+		Stream:   *stream,
+		Grade:    *grade,
+		Model:    *model,
+	}
+
 	printHeader()
 
-	ai, err := ai.NewClient(*grade, *model, *creative)
+	ai, err := ai.NewClient(conf)
 	if err != nil {
 		exitOnError(err)
 	}
 
-	if err := run(ai, *debug); err != nil {
+	if err := run(ai); err != nil {
 		exitOnError(err)
 	}
 }
 
-func run(ai *ai.AI, debug bool) error {
+func run(ai *ai.AI) error {
 	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui ?")
 	pterm.Italic.Printf("Pour quitter [quit], pour reinitiliser [reset]\n\n")
-
-	spinner := spinner.New(spinner.CharSets[2], 100*time.Millisecond)
-	if err := spinner.Color(spinnerColor); err != nil {
-		exitOnError(err)
-	}
 
 	s := bufio.NewScanner(os.Stdin)
 
@@ -83,51 +80,27 @@ func run(ai *ai.AI, debug bool) error {
 			continue
 		}
 
-		pterm.Printfln("")
-		spinner.Start()
-
-		res, err := ai.Chat(ctx)
-		if err != nil { // TODO: handle token limits
-			spinner.Stop()
-			if ctx.Err() == context.Canceled {
-				pterm.FgLightGreen.Printf("Message annulé\n\n")
-				ai.CancelLastMessage()
-				if debug {
-					printMsg(ai.Request.Messages)
-				}
-				continue
+		switch ai.Request.Stream {
+		case true:
+			if err := printChatStream(ctx, ai); err != nil {
+				return err
 			}
-			pterm.Error.Printf("%s\n\n", err)
-			continue
+		case false:
+			if err := printChat(ctx, ai); err != nil {
+				return err
+			}
 		}
-
-		spinner.Stop()
-		pterm.FgGreen.Printf("%s\n\n", res.Choices[0].Message.Content)
-		if debug {
-			printMsg(ai.Request.Messages)
-		}
-
-		ai.Request.Messages = append(ai.Request.Messages, res.Choices[0].Message)
 	}
 
 	return nil
 }
 
-func printHeader() {
-	pterm.DefaultBox.Println("Prof Newton assitant scolaire")
-	pterm.Printfln("")
-}
-
-func printMsg(msgs []openai.ChatCompletionMessage) {
-	for _, m := range msgs {
-		pterm.FgLightBlue.Printf("Role: %s\n", m.Role)
-		pterm.FgLightBlue.Printf("Content: %s\n", m.Content)
+func canceledMessage(ai *ai.AI, debug bool) {
+	pterm.FgLightGreen.Printf("\n\nMessage annulé")
+	ai.CancelLastMessage()
+	if debug {
+		printMsg(ai.Request.Messages)
 	}
-	pterm.Printfln("")
-}
-
-func printVersion() {
-	pterm.Printfln("Version: %s\n", version)
 }
 
 func exitOnError(err error) {

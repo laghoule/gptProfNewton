@@ -61,7 +61,7 @@ gptProfNewton
 
 Vous pouvez ensuite exécuter le binaire construit avec la commande suivante :
 
-```bash
+```text
 ./gptProfNewton -h
   -creative
         Utiliser le modele creatif
@@ -71,6 +71,8 @@ Vous pouvez ensuite exécuter le binaire construit avec la commande suivante :
         Grade de l'éléve (1-12) (default 4)
   -model string
         Modéle de l'API d'OpenAI (default "gpt-3.5")
+  -stream
+        Activer le mode streaming (default true)
   -version
         Afficher la version
 ```

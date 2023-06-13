@@ -7,7 +7,7 @@ RUN cd cmd \
 FROM dep AS build
 ARG VERSION "devel"
 WORKDIR /src/
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-X 'main.version=$VERSION'" -o gptProfNewton cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-X 'main.version=$VERSION'" -o gptProfNewton cmd/main.go cmd/printer.go
 
 FROM alpine:3.18
 LABEL org.opencontainers.image.source https://github.com/laghoule/gptProfNewton
