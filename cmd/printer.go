@@ -96,9 +96,9 @@ func printChatStream(ctx context.Context, ai *ai.AI) error {
 }
 
 func printMsg(msgs []openai.ChatCompletionMessage) {
-	for _, m := range msgs {
-		pterm.FgLightBlue.Printf("Role: %s\n", m.Role)
-		pterm.FgLightBlue.Printf("Content: %s\n", m.Content)
+	for _, msg := range msgs {
+		pterm.FgLightBlue.Printf("Role: %s\n", msg.Role)
+		pterm.FgLightBlue.Printf("Content: %s\n", msg.Content)
 		pterm.Println()
 	}
 }
