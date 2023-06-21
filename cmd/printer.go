@@ -19,7 +19,7 @@ const (
 )
 
 func printHeader() {
-	pterm.DefaultBox.Println("Prof Newton assitant scolaire")
+	pterm.DefaultBox.Println("Prof Newton assistant scolaire")
 	pterm.Printfln("")
 }
 
@@ -86,7 +86,7 @@ func printChatStream(ctx context.Context, ai *ai.AI) error {
 	})
 
 	if ai.Debug {
-		fmt.Printf("\n\n")
+		pterm.Printf("\n\n")
 		printMsg(ai.Request.Messages)
 	} else {
 		pterm.Printf("\n\n")
