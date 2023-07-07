@@ -1,5 +1,9 @@
 # gptProfNewton
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/laghoule/gptProfNewton)](https://goreportcard.com/report/github.com/laghoule/gptProfNewton)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=laghoule_gptProfNewton&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=laghoule_gptProfNewton)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=laghoule_gptProfNewton&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=laghoule_gptProfNewton)
+
 ## Description
 
 gptProfNewton est un projet qui utilise le modèle GPT pour simuler un professeur généraliste de niveau primaire et secondaire, le Professeur Newton. Le Professeur Newton est conçu pour utiliser un langage simple et imagé, adapté au niveau de l'élève. Il est toujours enthousiaste et démontre un grand intérêt à transmettre ses connaissances. Le programme est écrit en Go et utilise l'API OpenAI pour générer des réponses.
