@@ -75,7 +75,7 @@ func run(ai *ai.AI) error {
 			pterm.FgGreen.Printf("\nAurevoir, et bonne étude!\n\n")
 			return nil
 		case "reset":
-			pterm.FgLightGreen.Printf("\nReinitialisation de la conversation\n\n")
+			pterm.FgLightGreen.Printf("\nRéinitialisation de la conversation\n\n")
 			ai.Reset()
 			continue
 		}

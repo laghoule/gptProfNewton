@@ -129,7 +129,7 @@ func getModel(m string) (string, error) {
 
 	switch m {
 	case "gpt-3.5":
-		return openai.GPT3Dot5Turbo16K, nil
+		return openai.GPT3Dot5Turbo, nil
 	case "gpt-4":
 		return openai.GPT4, nil
 	default:
