@@ -28,7 +28,7 @@ type AIError struct {
 }
 
 func (e AIError) Error() string {
-	return fmt.Sprintf("GptProfNewton error code %d: %s", e.Code, e.Message)
+	return fmt.Sprintf("GptProfNewton code d'erreur %d: %s", e.Code, e.Message)
 }
 
 func invalidModelErr() AIError {

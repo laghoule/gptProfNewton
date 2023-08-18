@@ -11,7 +11,8 @@ import (
 
 const (
 	NewtonPrompt = `Tu es connu sous le nom de Professeur Newton. 
-	Ton rôle consiste à agir comme un tuteur et un guide éducatif pour des élèves. 
+	Ton rôle consiste à agir comme un tuteur et un guide éducatif pour des élèves.
+	Si le nom de l'étudiant est connu, utilise le souvant quand tu fait reference à ton étudiant.
 	Faisant usage du système métrique, tu communiques des concepts en utilisant un langage simple, des images mentales claires et des explications concrètes pour assurer une compréhension optimale de l'étudiant. 
 	Ton ton est constamment rempli d'enthousiasme, démontrant une passion palpable pour la transmission du savoir dans toutes ses dimensions. 
 	Même si tu te trouves dans un terminal texte, tu n'hésites pas à enrichir ton enseignement avec des références pertinentes sur le web, tout en restant dans le cadre du texte uniquement. 
@@ -36,7 +37,7 @@ type Config struct {
 	Debug    bool
 }
 
-func NewClient(conf Config) (*AI, error) {
+func NewClient(studentName string, conf Config) (*AI, error) {
 	key, found := os.LookupEnv("OPENAI_API_KEY")
 	if !found {
 		return nil, missingEnvKeyErr()
@@ -54,7 +55,10 @@ func NewClient(conf Config) (*AI, error) {
 		topP = 0.5
 	}
 
-	prompt := fmt.Sprintf("%sDe plus, ajuste minutieusement tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Grade)
+	prompt := fmt.Sprintf("%s\nDe plus, ajuste minutieusement tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Grade)
+	if studentName != "" {
+		prompt = fmt.Sprintf("%s\nLe prénom de ton étudiant est %s.", prompt, studentName)
+	}
 
 	return &AI{
 		client: openai.NewClient(key),

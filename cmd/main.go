@@ -24,6 +24,7 @@ func main() {
 	grade := flag.Int("grade", 4, "Grade de l'éléve (1-12)")
 	model := flag.String("model", "gpt-3.5", "Modéle de l'API d'OpenAI (gpt-3.5, gpt-4)")
 	stream := flag.Bool("stream", true, "Activer le mode streaming")
+	studentName := flag.String("studentName", "", "Nom de l'éléve")
 	version := flag.Bool("version", false, "Afficher la version")
 	flag.Parse()
 
@@ -46,7 +47,7 @@ func main() {
 
 	printHeader()
 
-	ai, err := AI.NewClient(conf)
+	ai, err := AI.NewClient(*studentName, conf)
 	if err != nil {
 		exitOnError(err)
 	}
@@ -57,7 +58,7 @@ func main() {
 }
 
 func run(ai *AI.AI) error {
-	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui ?")
+	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui?",)
 	pterm.Italic.Printf("Pour quitter [quit], pour reinitiliser [reset]\n\n")
 
 	s := bufio.NewScanner(os.Stdin)

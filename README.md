@@ -18,6 +18,8 @@ gptProfNewton est un projet qui utilise le modèle GPT pour simuler un professeu
 
 * Sécurité : Si le Professeur Newton juge qu'un sujet n'est pas approprié pour l'élève, il le référera à ses parents.
 
+* Modération : Utilise l'api de modération d'OpenAI, afin d'assurer une conversation appropriée.
+
 ## Installation
 
 ### Binaire Go
@@ -74,9 +76,11 @@ Vous pouvez ensuite exécuter le binaire construit avec la commande suivante :
   -grade int
         Grade de l'éléve (1-12) (default 4)
   -model string
-        Modéle de l'API d'OpenAI (default "gpt-3.5")
+        Modéle de l'API d'OpenAI (gpt-3.5, gpt-4) (default "gpt-3.5")
   -stream
         Activer le mode streaming (default true)
+  -studentName string
+        Nom de l'éléve
   -version
         Afficher la version
 ```
