@@ -36,7 +36,7 @@ func main() {
 		exitOnError(fmt.Errorf("Vous devez choisir un grade entre 1 et 12)"))
 	}
 
-	conf := ai.Config{
+	conf := AI.Config{
 		Debug:    *debug,
 		Creative: *creative,
 		Stream:   *stream,
@@ -46,7 +46,7 @@ func main() {
 
 	printHeader()
 
-	ai, err := ai.NewClient(conf)
+	ai, err := AI.NewClient(conf)
 	if err != nil {
 		exitOnError(err)
 	}
@@ -56,7 +56,7 @@ func main() {
 	}
 }
 
-func run(ai *ai.AI) error {
+func run(ai *AI.AI) error {
 	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui ?")
 	pterm.Italic.Printf("Pour quitter [quit], pour reinitiliser [reset]\n\n")
 
@@ -95,7 +95,7 @@ func run(ai *ai.AI) error {
 	return nil
 }
 
-func canceledMessage(ai *ai.AI, debug bool) {
+func canceledMessage(ai *AI.AI, debug bool) {
 	pterm.FgLightGreen.Printf("\n\nMessage annulé")
 	ai.CancelLastMessage()
 	if debug {
@@ -105,5 +105,5 @@ func canceledMessage(ai *ai.AI, debug bool) {
 
 func exitOnError(err error) {
 	pterm.Error.Println(err)
-	os.Exit(1)
+	os.Exit(1) // TODO: return AIError code instead of 1
 }

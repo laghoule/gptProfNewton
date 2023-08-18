@@ -1,7 +1,8 @@
-package ai
+package AI
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -38,7 +39,7 @@ type Config struct {
 func NewClient(conf Config) (*AI, error) {
 	key, found := os.LookupEnv("OPENAI_API_KEY")
 	if !found {
-		return nil, fmt.Errorf("Environment variable OPENAI_API_KEY is required")
+		return nil, missingEnvKeyErr()
 	}
 
 	model, err := getModel(conf.Model)
@@ -83,7 +84,7 @@ func (a *AI) Chat(ctx context.Context) (openai.ChatCompletionResponse, error) {
 		return a.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest(*a.Request))
 	}
 
-	return openai.ChatCompletionResponse{}, fmt.Errorf(modErrorMsg)
+	return openai.ChatCompletionResponse{}, flaggedTermsErr()
 }
 
 func (a *AI) ChatStream(ctx context.Context) (*openai.ChatCompletionStream, error) {
@@ -96,7 +97,7 @@ func (a *AI) ChatStream(ctx context.Context) (*openai.ChatCompletionStream, erro
 		return a.client.CreateChatCompletionStream(ctx, openai.ChatCompletionRequest(*a.Request))
 	}
 
-	return nil, fmt.Errorf(modErrorMsg)
+	return nil, flaggedTermsErr()
 }
 
 func (a *AI) Reset() {
@@ -112,7 +113,7 @@ func (a *AI) isChatSafe(ctx context.Context) (bool, error) {
 		Input: a.Request.Messages[len(a.Request.Messages)-1].Content,
 	})
 	if err != nil {
-		return false, err
+		return false, errors.Join(apiErr(), err)
 	}
 
 	for _, result := range modRes.Results {
@@ -125,14 +126,12 @@ func (a *AI) isChatSafe(ctx context.Context) (bool, error) {
 }
 
 func getModel(m string) (string, error) {
-	var models = []string{"gpt-3.5", "gpt-4"}
-
 	switch m {
 	case "gpt-3.5":
-		return openai.GPT3Dot5Turbo, nil
+		return openai.GPT3Dot5Turbo16K, nil
 	case "gpt-4":
 		return openai.GPT4, nil
 	default:
-		return "", fmt.Errorf("Model %s not found\nsupported models: %q", m, models)
+		return "", invalidModelErr()
 	}
 }

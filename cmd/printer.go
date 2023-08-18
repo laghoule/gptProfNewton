@@ -23,7 +23,7 @@ func printHeader() {
 	pterm.Printfln("")
 }
 
-func printChat(ctx context.Context, ai *ai.AI) error {
+func printChat(ctx context.Context, ai *AI.AI) error {
 	spinner := spinner.New(spinner.CharSets[2], 100*time.Millisecond)
 	if err := spinner.Color(spinnerColor); err != nil {
 		return fmt.Errorf("error while setting spinner color: %w", err)
@@ -35,7 +35,12 @@ func printChat(ctx context.Context, ai *ai.AI) error {
 	res, err := ai.Chat(ctx)
 	if err != nil {
 		spinner.Stop()
-		if ctx.Err() == context.Canceled {
+		switch err {
+		case AI.FlaggedTermsErr:
+			ai.CancelLastMessage()
+			printFlaggedTerms()
+			return nil
+		case context.Canceled:
 			canceledMessage(ai, ai.Debug)
 			return nil
 		}
@@ -53,14 +58,23 @@ func printChat(ctx context.Context, ai *ai.AI) error {
 	return nil
 }
 
-func printChatStream(ctx context.Context, ai *ai.AI) error {
+func printChatStream(ctx context.Context, ai *AI.AI) error {
 	stream, err := ai.ChatStream(ctx)
 	if err != nil {
-		return err
+		switch err {
+		case AI.FlaggedTermsErr:
+			ai.CancelLastMessage()
+			pterm.Println()
+			printFlaggedTerms()
+			return nil
+		case context.Canceled:
+			canceledMessage(ai, ai.Debug)
+			return nil
+		}
+		return errors.Join(AI.ApiErr, err)
 	}
 	defer stream.Close()
 
-	pterm.Println()
 	var streamedData []byte
 
 	for {
@@ -73,7 +87,7 @@ func printChatStream(ctx context.Context, ai *ai.AI) error {
 				canceledMessage(ai, ai.Debug)
 				break
 			}
-			return err
+			return errors.Join(AI.ApiErr, err)
 		}
 
 		pterm.FgGreen.Printf("%s", recv.Choices[0].Delta.Content)
@@ -93,6 +107,11 @@ func printChatStream(ctx context.Context, ai *ai.AI) error {
 	}
 
 	return nil
+}
+
+func printFlaggedTerms() {
+	pterm.FgRed.Printf(AI.FlaggedTermsErr.Message)
+	pterm.Italic.Printf("\nVotre dernier message a été annulé.\n\n")
 }
 
 func printMsg(msgs []openai.ChatCompletionMessage) {
