@@ -4,14 +4,14 @@ go 1.21
 
 require (
 	github.com/briandowns/spinner v1.23.0
-	github.com/pterm/pterm v0.12.65
+	github.com/pterm/pterm v0.12.66
 	github.com/sashabaranov/go-openai v1.14.2
 )
 
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
-	atomicgo.dev/schedule v0.0.2 // indirect
+	atomicgo.dev/schedule v0.1.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/gookit/color v1.5.4 // indirect
