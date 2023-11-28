@@ -134,7 +134,7 @@ func getModel(m string) (string, error) {
 	case "gpt-3.5":
 		return openai.GPT3Dot5Turbo16K, nil
 	case "gpt-4":
-		return openai.GPT4, nil
+		return openai.GPT4TurboPreview, nil
 	default:
 		return "", invalidModelErr()
 	}
