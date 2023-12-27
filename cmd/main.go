@@ -58,8 +58,8 @@ func main() {
 }
 
 func run(ai *AI.AI) error {
-	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui?",)
-	pterm.Italic.Printf("Pour quitter [quit], pour reinitiliser [reset]\n\n")
+	pterm.FgGreen.Printfln("Comment puis-je t'aider aujourd'hui?")
+	pterm.Italic.Printf("Pour quitter /quit, pour reinitiliser /reset\n\n")
 
 	s := bufio.NewScanner(os.Stdin)
 
@@ -72,27 +72,34 @@ func run(ai *AI.AI) error {
 		})
 
 		switch s.Text() {
-		case "quit":
+		case "/quit":
 			pterm.FgGreen.Printf("\nAurevoir, et bonne étude!\n\n")
 			return nil
-		case "reset":
+		case "/reset":
 			pterm.FgLightGreen.Printf("\nRéinitialisation de la conversation\n\n")
 			ai.Reset()
 			continue
 		}
 
-		switch ai.Request.Stream {
-		case true:
-			if err := printChatStream(ctx, ai); err != nil {
-				return err
-			}
-		case false:
-			if err := printChat(ctx, ai); err != nil {
-				return err
-			}
+		if err := chat(ctx, ai); err != nil {
+			return err
 		}
 	}
 
+	return nil
+}
+
+func chat(ctx context.Context, ai *AI.AI) error {
+	switch ai.Request.Stream {
+	case true:
+		if err := printChatStream(ctx, ai); err != nil {
+			return err
+		}
+	case false:
+		if err := printChat(ctx, ai); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
