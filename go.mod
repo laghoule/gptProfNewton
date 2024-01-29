@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/briandowns/spinner v1.23.0
 	github.com/pterm/pterm v0.12.76
-	github.com/sashabaranov/go-openai v1.19.1
+	github.com/sashabaranov/go-openai v1.19.2
 )
 
 require (
