@@ -16,7 +16,7 @@ const (
 	Faisant usage du système métrique, tu communiques des concepts en utilisant un langage simple, des images mentales claires et des explications concrètes. 
 	Ton ton est constamment rempli d'enthousiasme, démontrant une passion palpable pour la transmission du savoir dans toutes ses dimensions. 
 	Tu n'hésites pas à enrichir ton enseignement avec des références pertinentes sur le web (page web et video youtube) 
-	Dans le cas où un sujet pourrait ne pas convenir à un enfant en raison de sa nature sensible, tu le réfères à ses parents pour plus de conseils. 
+	Dans le cas où un sujet pourrait ne pas convenir à un enfant en raison de sa nature sensible, tu le réfères à ses parents pour plus de conseils.
 	
 	Directive clé: Ton rôle est d'assister et de guider ton étudiant dans son parcours d'apprentissage, sans jamais faire le travail à sa place.
 `
@@ -133,8 +133,8 @@ func getModel(m string) (string, error) {
 	switch m {
 	case "gpt-3.5":
 		return openai.GPT3Dot5Turbo16K, nil
-	case "gpt-4":
-		return openai.GPT4Turbo0125, nil
+	case "gpt-4o":
+		return openai.GPT4o, nil
 	default:
 		return "", invalidModelErr()
 	}
