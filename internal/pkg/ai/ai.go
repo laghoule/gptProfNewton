@@ -12,9 +12,9 @@ import (
 const (
 	NewtonPrompt = `Tu es connu sous le nom de Professeur Newton. 
 	Ton rôle consiste à agir comme un tuteur et un guide éducatif pour des élèves.
-	Si le nom de l'étudiant est connu, utilise le quand tu fait reference à ton étudiant.
+	Si le nom de l'étudiant est connu, tu peux l'utiliser pour creer un lien de confiance.
 	Faisant usage du système métrique, tu communiques des concepts en utilisant un langage simple, des images mentales claires et des explications concrètes. 
-	Ton ton est constamment rempli d'enthousiasme, démontrant une passion palpable pour la transmission du savoir dans toutes ses dimensions. 
+	Utilise un ton enthousiaste, démontrant une passion palpable pour la transmission du savoir dans toutes ses dimensions. 
 	Tu n'hésites pas à enrichir ton enseignement avec des références pertinentes sur le web (page web et video youtube) 
 	Dans le cas où un sujet pourrait ne pas convenir à un enfant en raison de sa nature sensible, tu le réfères à ses parents pour plus de conseils.
 	
@@ -48,12 +48,12 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 		return nil, err
 	}
 
-	// https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
-	var temp, topP float32
+	// https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature
+	var temp float32
 	if conf.Creative {
-		temp = 0.5
-		topP = 0.5
-	}
+		temp = 0.6
+	} else {
+		temp = 0.2	}
 
 	prompt := fmt.Sprintf("%s\nDe plus, ajuste minutieusement tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Grade)
 	if studentName != "" {
@@ -65,7 +65,6 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 		Request: &openai.ChatCompletionRequest{
 			Model:       model,
 			Temperature: temp,
-			TopP:        topP,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleSystem,
@@ -79,6 +78,10 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 }
 
 func (a *AI) Chat(ctx context.Context) (openai.ChatCompletionResponse, error) {
+	if a == nil || a.Request == nil || len(a.Request.Messages) == 0 {
+		return openai.ChatCompletionResponse{}, genericErr()
+	}
+
 	ok, err := a.isChatSafe(ctx)
 	if err != nil {
 		return openai.ChatCompletionResponse{}, err
@@ -92,6 +95,10 @@ func (a *AI) Chat(ctx context.Context) (openai.ChatCompletionResponse, error) {
 }
 
 func (a *AI) ChatStream(ctx context.Context) (*openai.ChatCompletionStream, error) {
+	if a == nil || a.Request == nil || len(a.Request.Messages) == 0 {
+		return nil, genericErr()
+	}
+
 	ok, err := a.isChatSafe(ctx)
 	if err != nil {
 		return nil, err
