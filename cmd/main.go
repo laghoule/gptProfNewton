@@ -72,6 +72,8 @@ func run(ai *AI.AI) error {
 		})
 
 		switch s.Text() {
+		case "":
+			continue
 		case "/quit":
 			pterm.FgGreen.Printf("\nAurevoir, et bonne étude!\n\n")
 			return nil
