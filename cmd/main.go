@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/laghoule/gptProfNewton/internal/pkg/ai"
@@ -71,7 +72,7 @@ func run(ai *AI.AI) error {
 			Content: s.Text(),
 		})
 
-		switch s.Text() {
+		switch stripSpace(s.Text()) {
 		case "":
 			continue
 		case "/quit":
@@ -82,6 +83,8 @@ func run(ai *AI.AI) error {
 			ai.Reset()
 			continue
 		}
+
+		pterm.Println()
 
 		if err := chat(ctx, ai); err != nil {
 			return err
@@ -103,6 +106,10 @@ func chat(ctx context.Context, ai *AI.AI) error {
 		}
 	}
 	return nil
+}
+
+func stripSpace(str string) string {
+	return strings.ReplaceAll(str, " ", "")
 }
 
 func canceledMessage(ai *AI.AI, debug bool) {
