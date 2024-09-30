@@ -1,11 +1,11 @@
 module github.com/laghoule/gptProfNewton
 
-go 1.23
+go 1.23.1
 
 require (
 	github.com/briandowns/spinner v1.23.1
 	github.com/pterm/pterm v0.12.79
-	github.com/sashabaranov/go-openai v1.30.3
+	github.com/sashabaranov/go-openai v1.31.0
 )
 
 require (
