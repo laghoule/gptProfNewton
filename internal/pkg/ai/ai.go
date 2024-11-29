@@ -53,7 +53,13 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 	if conf.Creative {
 		temp = 0.6
 	} else {
-		temp = 0.2	}
+		temp = 0.2
+	}
+
+	// o1 model has beta-limitations, temperature, top_p and n are fixed at 1, while presence_penalty and frequency_penalty are fixed at 0
+	if conf.Model == "o1" {
+		temp = 1
+	}
 
 	prompt := fmt.Sprintf("%s\nDe plus, ajuste minutieusement tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Grade)
 	if studentName != "" {
@@ -67,7 +73,7 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 			Temperature: temp,
 			Messages: []openai.ChatCompletionMessage{
 				{
-					Role:    openai.ChatMessageRoleSystem,
+					Role:    openai.ChatMessageRoleAssistant,
 					Content: prompt,
 				},
 			},
@@ -142,6 +148,8 @@ func getModel(m string) (string, error) {
 		return openai.GPT3Dot5Turbo16K, nil
 	case "gpt-4o":
 		return openai.GPT4o, nil
+	case "o1":
+		return openai.O1Preview, nil
 	default:
 		return "", invalidModelErr()
 	}
