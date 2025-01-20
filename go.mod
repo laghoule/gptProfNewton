@@ -3,7 +3,7 @@ module github.com/laghoule/gptProfNewton
 go 1.23.3
 
 require (
-	github.com/briandowns/spinner v1.23.1
+	github.com/briandowns/spinner v1.23.2
 	github.com/pterm/pterm v0.12.80
 	github.com/sashabaranov/go-openai v1.36.1
 )
