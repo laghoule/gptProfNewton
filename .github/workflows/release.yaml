@@ -13,7 +13,7 @@ jobs:
         goos: [linux, windows, darwin]
         goarch: [amd64, arm64]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set VERSION env
         run: echo VERSION=$(echo ${GITHUB_REF} | rev | cut -d'/' -f 1 | rev ) >> ${GITHUB_ENV}
       - uses: wangyoucao577/go-release-action@v1.53
