@@ -56,8 +56,8 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 		temp = 0.2
 	}
 
-	// o1 model has beta-limitations, temperature, top_p and n are fixed at 1, while presence_penalty and frequency_penalty are fixed at 0
-	if conf.Model == "o1" {
+	// o3 model has beta-limitations, temperature, top_p and n are fixed at 1, while presence_penalty and frequency_penalty are fixed at 0
+	if conf.Model == "o3-mini" {
 		temp = 1
 	}
 
@@ -148,8 +148,8 @@ func getModel(m string) (string, error) {
 		return openai.GPT3Dot5Turbo16K, nil
 	case "gpt-4o":
 		return openai.GPT4o, nil
-	case "o1":
-		return openai.O1Preview, nil
+	case "o3-mini":
+		return openai.O3Mini, nil
 	default:
 		return "", invalidModelErr()
 	}
