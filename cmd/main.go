@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"context"
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 
 	"github.com/laghoule/gptProfNewton/internal/pkg/ai"
+	"github.com/laghoule/gptProfNewton/internal/pkg/config"
 	"github.com/pterm/pterm"
 	"github.com/sashabaranov/go-openai"
 )
@@ -20,12 +20,8 @@ var (
 )
 
 func main() {
-	creative := flag.Bool("creative", false, "Utiliser le modele creatif")
 	debug := flag.Bool("debug", false, "Activer le mode debug")
-	grade := flag.Int("grade", 4, "Grade de l'éléve (1-12)")
-	model := flag.String("model", "gpt-3.5", "Modéle de l'API d'OpenAI (gpt-3.5, gpt-4o, o3-mini)")
-	stream := flag.Bool("stream", true, "Activer le mode streaming")
-	studentName := flag.String("studentName", "", "Nom de l'éléve")
+	cfgFile := flag.String("config", "", "Chemin vers le fichier de configuration")
 	version := flag.Bool("version", false, "Afficher la version")
 	flag.Parse()
 
@@ -34,21 +30,14 @@ func main() {
 		return
 	}
 
-	if *grade < 1 || *grade > 12 {
-		exitOnError(fmt.Errorf("Vous devez choisir un grade entre 1 et 12)"))
-	}
-
-	conf := AI.Config{
-		Debug:    *debug,
-		Creative: *creative,
-		Stream:   *stream,
-		Grade:    *grade,
-		Model:    *model,
+	cfg, err := config.New(*cfgFile)
+	if err != nil {
+		exitOnError(err)
 	}
 
 	printHeader()
 
-	ai, err := AI.NewClient(*studentName, conf)
+	ai, err := AI.NewClient(cfg, *debug)
 	if err != nil {
 		exitOnError(err)
 	}
@@ -86,25 +75,11 @@ func run(ai *AI.AI) error {
 
 		pterm.Println()
 
-		if err := chat(ctx, ai); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func chat(ctx context.Context, ai *AI.AI) error {
-	switch ai.Request.Stream {
-	case true:
 		if err := printChatStream(ctx, ai); err != nil {
 			return err
 		}
-	case false:
-		if err := printChat(ctx, ai); err != nil {
-			return err
-		}
 	}
+
 	return nil
 }
 

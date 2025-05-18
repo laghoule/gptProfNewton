@@ -12,16 +12,16 @@ const (
 	FlaggedTermsErrCode
 	APIErrCode
 
-	genericErrMsg       = "Une erreur inattendue s'est produite."
-	invalidModelErrMsg  = "Modele GPT invalide."
-	missingEnvKeyErrMsg = "La variable d'environnement OPENAI_API_KEY est requise."
-	flaggedTermsErrMsg  = "Le message que vous avez tenté de soumettre contient des termes inappropriés."
-	apiErrMsg           = "Erreur lors de l'appel à l'api d'OpenAI."
+	GenericErrMsg      = "Une erreur inattendue s'est produite."
+	InvalidModelErrMsg = "Modele GPT invalide."
+	MissingKeyErrMsg   = "La variable d'environnement OPENAI_API_KEY ou la clef_api est requise."
+	FlaggedTermsErrMsg = "Le message que vous avez tenté de soumettre contient des termes inappropriés."
+	ApiErrMsg          = "Erreur lors de l'appel à l'api d'OpenAI."
 )
 
 var GenericErr = genericErr()
 var InvalidModelErr = invalidModelErr()
-var MissingEnvKeyErr = missingEnvKeyErr()
+var MissingEnvKeyErr = missingKeyErr()
 var FlaggedTermsErr = flaggedTermsErr()
 var ApiErr = apiErr()
 
@@ -35,21 +35,21 @@ func (e AIError) Error() string {
 }
 
 func genericErr() AIError {
-	return AIError{Message: genericErrMsg, Code: GenericErrCode}
+	return AIError{Message: GenericErrMsg, Code: GenericErrCode}
 }
 
 func invalidModelErr() AIError {
-	return AIError{Message: invalidModelErrMsg, Code: InvalidModelErrCode}
+	return AIError{Message: InvalidModelErrMsg, Code: InvalidModelErrCode}
 }
 
-func missingEnvKeyErr() AIError {
-	return AIError{Message: missingEnvKeyErrMsg, Code: MissingEnvKeyErrCode}
+func missingKeyErr() AIError {
+	return AIError{Message: MissingKeyErrMsg, Code: MissingEnvKeyErrCode}
 }
 
 func flaggedTermsErr() AIError {
-	return AIError{Message: flaggedTermsErrMsg, Code: FlaggedTermsErrCode}
+	return AIError{Message: FlaggedTermsErrMsg, Code: FlaggedTermsErrCode}
 }
 
 func apiErr() AIError {
-	return AIError{Message: apiErrMsg, Code: APIErrCode}
+	return AIError{Message: ApiErrMsg, Code: APIErrCode}
 }

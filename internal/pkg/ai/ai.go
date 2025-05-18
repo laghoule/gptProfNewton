@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/laghoule/gptProfNewton/internal/pkg/config"
+
 	openai "github.com/sashabaranov/go-openai"
 )
 
@@ -26,48 +28,44 @@ const (
 type AI struct {
 	client  *openai.Client
 	Request *openai.ChatCompletionRequest
-	Config
+	Config  *config.Config
+	Debug   bool
 }
 
-type Config struct {
-	Grade    int
-	Model    string
-	Stream   bool
-	Creative bool
-	Debug    bool
-}
-
-func NewClient(studentName string, conf Config) (*AI, error) {
+func NewClient(conf *config.Config, debug bool) (*AI, error) {
+	// TODO: do better than this
 	key, found := os.LookupEnv("OPENAI_API_KEY")
-	if !found {
-		return nil, missingEnvKeyErr()
+	if !found && conf.OpenAI.APIKey == "" {
+		return nil, missingKeyErr()
+	} else {
+		key = conf.OpenAI.APIKey
 	}
 
-	model, err := getModel(conf.Model)
+	client := openai.NewClient(key)
+	model, err := getModel(client, context.Background(), conf.OpenAI.Model)
 	if err != nil {
 		return nil, err
 	}
 
 	// https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature
 	var temp float32
-	if conf.Creative {
+	if conf.OpenAI.Creative {
 		temp = 0.6
 	} else {
 		temp = 0.2
 	}
 
 	// o3 model has beta-limitations, temperature, top_p and n are fixed at 1, while presence_penalty and frequency_penalty are fixed at 0
-	if conf.Model == "o3-mini" {
+	if conf.OpenAI.Model == "o3-mini" {
 		temp = 1
 	}
 
-	prompt := fmt.Sprintf("%s\nDe plus, ajuste minutieusement tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Grade)
-	if studentName != "" {
-		prompt = fmt.Sprintf("%s\nLe prénom de ton étudiant est %s.", prompt, studentName)
-	}
+	prompt := fmt.Sprintf("%s\nDe plus, ajuste minutieusement tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Student.Grade)
+	prompt = fmt.Sprintf("%s\nLe prénom de ton étudiant est %s.", prompt, conf.Student.Name)
+	prompt = fmt.Sprintf("%s\nLes particularitées de l'étudiant sont:\n%s.", prompt, conf.Student.Details)
 
 	return &AI{
-		client: openai.NewClient(key),
+		client: client,
 		Request: &openai.ChatCompletionRequest{
 			Model:       model,
 			Temperature: temp,
@@ -77,27 +75,11 @@ func NewClient(studentName string, conf Config) (*AI, error) {
 					Content: prompt,
 				},
 			},
-			Stream: conf.Stream,
+			Stream: true,
 		},
 		Config: conf,
+		Debug:  debug,
 	}, nil
-}
-
-func (a *AI) Chat(ctx context.Context) (openai.ChatCompletionResponse, error) {
-	if a == nil || a.Request == nil || len(a.Request.Messages) == 0 {
-		return openai.ChatCompletionResponse{}, genericErr()
-	}
-
-	ok, err := a.isChatSafe(ctx)
-	if err != nil {
-		return openai.ChatCompletionResponse{}, err
-	}
-
-	if ok {
-		return a.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest(*a.Request))
-	}
-
-	return openai.ChatCompletionResponse{}, flaggedTermsErr()
 }
 
 func (a *AI) ChatStream(ctx context.Context) (*openai.ChatCompletionStream, error) {
@@ -142,15 +124,17 @@ func (a *AI) isChatSafe(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
-func getModel(m string) (string, error) {
-	switch m {
-	case "gpt-3.5":
-		return openai.GPT3Dot5Turbo16K, nil
-	case "gpt-4o":
-		return openai.GPT4o, nil
-	case "o3-mini":
-		return openai.O3Mini, nil
-	default:
-		return "", invalidModelErr()
+func getModel(client *openai.Client, ctx context.Context, m string) (string, error) {
+	models, err := client.ListModels(ctx)
+	if err != nil {
+		return "", errors.Join(apiErr(), err)
 	}
+
+	for _, model := range models.Models {
+		if model.ID == m {
+			return model.ID, nil
+		}
+	}
+
+	return "", invalidModelErr()
 }
