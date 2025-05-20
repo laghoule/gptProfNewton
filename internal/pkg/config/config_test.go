@@ -10,17 +10,17 @@ func TestLoad(t *testing.T) {
 	tests := []struct {
 		name     string
 		fileName string
-		error  bool
+		error    bool
 	}{
 		{
 			name:     "load good config",
 			fileName: "testdata/good.yaml",
-			error:  false,
+			error:    false,
 		},
 		{
 			name:     "load bad config",
 			fileName: "testdata/bad.yaml",
-			error:  true,
+			error:    true,
 		},
 	}
 
