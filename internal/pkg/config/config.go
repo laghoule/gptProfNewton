@@ -59,7 +59,7 @@ func (c *Config) validate() error {
 		return fmt.Errorf("nom est requis")
 	}
 
-	if c.Student.Grade > 1 && c.Student.Grade < 12 {
+	if c.Student.Grade < 1 && c.Student.Grade > 12 {
 		return fmt.Errorf("niveau doit être entre 1 et 12")
 	}
 
