@@ -6,9 +6,11 @@
 
 ## Description
 
-gptProfNewton est un projet qui utilise le modèle GPT pour simuler un professeur généraliste de niveau primaire et secondaire, le Professeur Newton. Le Professeur Newton est conçu pour utiliser un langage simple et imagé, adapté au niveau de l'élève. Il est toujours enthousiaste et démontre un grand intérêt à transmettre ses connaissances. Le programme est écrit en Go et utilise l'API OpenAI pour générer des réponses.
+gptProfNewton est un projet qui utilise le modèle GPT d'OpenAI pour simuler un tuteur scolaire, le Professeur Newton. Le tuteur virtuel est conçu pour utiliser un langage simple et imagé, adapté au niveau de l'élève. Il est toujours enthousiaste et démontre un grand intérêt à transmettre ses connaissances. Le programme est écrit en Go et utilise l'API OpenAI pour générer des réponses.
 
 ### Caractéristiques
+
+* Mode texte seulement, permet d'éliminer les distractions.
 
 * Langage simple et imagé : Le Professeur Newton utilise un langage simple et imagé pour faciliter la compréhension des concepts par les élèves.
 
@@ -24,7 +26,7 @@ gptProfNewton est un projet qui utilise le modèle GPT pour simuler un professeu
 
 ### Binaire Go
 
-Pour installer gptProfNewton en tant que binaire Go, vous pouvez télécharger la dernière version depuis la page des releases de notre dépôt GitHub. Nous fournissons des binaires pour Linux, Windows et macOS, à la fois pour les architectures amd64 et arm64.
+Pour installer gptProfNewton, vous pouvez télécharger la dernière version depuis la page des releases de notre dépôt GitHub. Nous fournissons des binaires pour Linux, Windows et macOS, à la fois pour les architectures amd64 et arm64.
 
 Une fois que vous avez téléchargé le binaire correspondant à votre système, vous pouvez le rendre exécutable et le déplacer dans un répertoire de votre PATH. Par exemple, pour un binaire Linux, vous pouvez faire :
 
@@ -33,65 +35,45 @@ chmod +x gptProfNewton-linux-amd64
 sudo mv gptProfNewton-linux-amd64 /usr/local/bin/gptProfNewton
 ```
 
-### Docker
-
-Si vous préférez utiliser Docker, vous pouvez également tirer notre image depuis le GitHub Container Registry ou Docker Hub :
-
-```bash
-docker pull ghcr.io/laghoule/gptProfNewton:latest
-```
-
-ou
-
-```bash
-docker pull laghoule/gptProfNewton:latest
-```
-
 ### Utilisation
 
-Pour utiliser gptProfNewton, vous devez d'abord définir votre clé API OpenAI comme variable d'environnement :
+Pour utiliser gptProfNewton, vous devez d'abord posseder une clef d'utilisation d'OpenAI. Vous devez par la suite creer un fichier de configuration:
 
-Pour Linux et macOS :
+config.yaml
+
+```yaml
+eleve:
+  nom: Bob
+  niveau: 1
+  details: "Bob est un eleve qui a des difficultes en francais, porte un attention particuliere a l'orthographe et a la grammaire, il est tres curieux et adore les maths."
+
+openai:
+  creatif: true
+  modele: gpt-4o
+  clef_api: "sk-..."
+```
+
+Vous pouvez ensuite exécuter le binaire avec la commande suivante :
+
+Linux & MacOS:
 
 ```bash
-export OPENAI_API_KEY=your-api-key
-./gptProfNewton
+./gptProfNewton -config config.yaml
 ```
 
 Pour Windows :
 
 ```powershell
-$env:OPENAI_API_KEY="your-api-key"
-gptProfNewton
+gptProfNewton -config config.yaml
 ```
 
-Vous pouvez ensuite exécuter le binaire construit avec la commande suivante :
-
-```text
-./gptProfNewton -h
-  -creative
-        Utiliser le modele creatif
-  -debug
-        Activer le mode debug
-  -grade int
-        Grade de l'éléve (1-12) (default 4)
-  -model string
-        Modéle de l'API d'OpenAI (gpt-3.5, gpt-4) (default "gpt-3.5")
-  -stream
-        Activer le mode streaming (default true)
-  -studentName string
-        Nom de l'éléve
-  -version
-        Afficher la version
-```
-
-Ou, si vous utilisez Docker, vous pouvez passer la clé API comme variable d'environnement à Docker :
+Ou, si vous preferer utilisez Docker:
 
 ```bash
-docker run -it --rm -e OPENAI_API_KEY=your-api-key ghcr.io/laghoule/gptProfNewton:latest
+docker run -it --rm -v $(pwd)/config.yaml:/config.yaml ghcr.io/laghoule/gptprofnewton -config /config.yaml
 ```
 
-Pour quitter le programme, tapez `quit`, pour reinitialiser un conversation, tapez `reset`.
+Pour quitter le programme, tapez `/quit`, pour reinitialiser un conversation, tapez `/reset`.
 
 ### Contribution
 
