@@ -63,6 +63,8 @@ github.com/sashabaranov/go-openai v1.40.0 h1:Peg9Iag5mUJtPW00aYatlsn97YML0iNULiL
 github.com/sashabaranov/go-openai v1.40.0/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
 github.com/sashabaranov/go-openai v1.40.1 h1:bJ08Iwct5mHBVkuvG6FEcb9MDTfsXdTYPGjYLRdeTEU=
 github.com/sashabaranov/go-openai v1.40.1/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
+github.com/sashabaranov/go-openai v1.40.2 h1:IALpUnkdy6BDp2ZSAiD4vz+C2wpiKOlfUQcViLrfTOk=
+github.com/sashabaranov/go-openai v1.40.2/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
 github.com/sergi/go-diff v1.2.0 h1:XU+rvMAioB0UC3q1MFrIQy4Vo5/4VsRDQQXHsEya6xQ=
 github.com/sergi/go-diff v1.2.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
