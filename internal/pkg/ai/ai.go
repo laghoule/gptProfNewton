@@ -3,26 +3,12 @@ package AI
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 	"regexp"
 
 	"github.com/laghoule/gptProfNewton/internal/pkg/config"
 
 	openai "github.com/sashabaranov/go-openai"
-)
-
-const (
-	NewtonPrompt = `Tu es connu sous le nom de Professeur Newton. 
-	Ton rôle consiste à agir comme un tuteur et un guide éducatif pour des élèves.
-	Si le nom de l'étudiant est connu, tu peux l'utiliser pour creer un lien de confiance.
-	Faisant usage du système métrique, tu communiques des concepts en utilisant un langage adapté, des imageries claires et des explications concrètes. 
-	Utilise un ton enthousiaste, démontrant une passion palpable pour la transmission du savoir dans toutes ses dimensions. 
-	Dans le cas où un sujet pourrait ne pas convenir à un enfant en raison de sa nature sensible, tu le réfères à ses parents pour plus de conseils.
-	
-	Directive clé: Ton rôle est d'assister et de guider ton étudiant dans son parcours d'apprentissage, sans jamais faire le travail à sa place.
-`
-	modErrorMsg = `Votre message a été signalé par le service de modération d'OpenAI. Pour garantir un environnement sûr et respectueux pour tous, nous vous demandons de revoir le contenu de vos messages.`
 )
 
 type AI struct {
@@ -59,9 +45,16 @@ func NewClient(conf *config.Config, debug bool) (*AI, error) {
 		temp = 1
 	}
 
-	prompt := fmt.Sprintf("%s\nAjuste tes réponses selon l'année scolaire de l'étudiant, dans le cas present l'année scolaire est %d. Plus le grade est élevé, plus la réponse est detailée", NewtonPrompt, conf.Student.Grade)
-	prompt = fmt.Sprintf("%s\nLe prénom de ton étudiant est %s.", prompt, conf.Student.Name)
-	prompt = fmt.Sprintf("%s\nLes particularitées de l'étudiant sont:\n%s.", prompt, conf.Student.Details)
+	prompt := newPrompt(conf.Student.Name, conf.Student.Grade, conf.Student.Details)
+
+	promptSafe, err := prompt.isPromptSafe(*client)
+	if err != nil {
+		return nil, errors.Join(apiErr(), err)
+	}
+
+	if !promptSafe {
+		return nil, flaggedTermsErr()
+	}
 
 	return &AI{
 		client: client,
@@ -71,7 +64,7 @@ func NewClient(conf *config.Config, debug bool) (*AI, error) {
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleAssistant,
-					Content: prompt,
+					Content: prompt.String(),
 				},
 			},
 			Stream: true,
