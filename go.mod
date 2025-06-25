@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/pterm/pterm v0.12.81
-	github.com/sashabaranov/go-openai v1.40.2
+	github.com/sashabaranov/go-openai v1.40.3
 	github.com/stretchr/testify v1.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
