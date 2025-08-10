@@ -48,7 +48,6 @@ eleve:
   details: "Bob est un eleve qui a des difficultes en francais, porte un attention particuliere a l'orthographe et a la grammaire, il est tres curieux et adore les maths."
 
 openai:
-  creatif: true
   modele: gpt-4o
   clef_api: "sk-..."
 ```
