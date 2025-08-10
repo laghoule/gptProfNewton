@@ -25,7 +25,6 @@ type Student struct {
 type OpenAI struct {
 	APIKey   string `yaml:"clef_api"`
 	Model    string `yaml:"modele,omitempty"`
-	Creative bool   `yaml:"creatif,omitempty"`
 }
 
 func New(cfgFile string) (*Config, error) {

@@ -32,19 +32,6 @@ func NewClient(conf *config.Config, debug bool) (*AI, error) {
 		return nil, err
 	}
 
-	// https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature
-	var temp float32
-	if conf.OpenAI.Creative {
-		temp = 0.6
-	} else {
-		temp = 0.2
-	}
-
-	// thinking model have limitations, temperature, top_p and n are fixed at 1, while presence_penalty and frequency_penalty are fixed at 0
-	if isThinkingModel(conf.OpenAI.Model) {
-		temp = 1
-	}
-
 	prompt := newPrompt(conf.Student.Name, conf.Student.Grade, conf.Student.Details)
 
 	promptSafe, err := prompt.isPromptSafe(*client)
@@ -60,7 +47,6 @@ func NewClient(conf *config.Config, debug bool) (*AI, error) {
 		client: client,
 		Request: &openai.ChatCompletionRequest{
 			Model:       model,
-			Temperature: temp,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleAssistant,
