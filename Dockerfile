@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine AS dep
+FROM golang:1.25-alpine AS dep
 WORKDIR /src/
 COPY . .
 RUN cd cmd \
