@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Set VERSION env
         run: echo VERSION=$(echo ${GITHUB_REF} | rev | cut -d'/' -f 1 | rev ) >> ${GITHUB_ENV}
-      - uses: wangyoucao577/go-release-action@v1.53
+      - uses: wangyoucao577/go-release-action@v1.54
         with:
           github_token: ${{ secrets.GPTPROFNEWTON_TOKEN }}
           goos: ${{ matrix.goos }}
